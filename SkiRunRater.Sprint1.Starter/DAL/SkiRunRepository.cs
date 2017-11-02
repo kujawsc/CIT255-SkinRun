@@ -86,9 +86,11 @@ namespace SkiRunRater
         {
             string skiRunString;
 
+            _skiRuns.Add(skiRun);
+
             skiRunString = skiRun.ID + "," + skiRun.Name + "," + skiRun.Vertical;
 
-
+            WriteSkiRunsData();
         }
 
         /// <summary>
@@ -114,7 +116,10 @@ namespace SkiRunRater
         /// <param name="skiRun">ski run object</param>
         public void UpdateSkiRun(SkiRun skiRun)
         {
+            DeleteSkiRun(skiRun.ID);
+            InsertSkiRun(skiRun);
 
+            WriteSkiRunsData();
         }
 
         /// <summary>
