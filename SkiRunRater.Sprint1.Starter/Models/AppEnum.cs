@@ -12,7 +12,7 @@ namespace SkiRunRater
         {
             None,
             ListAllSkiRuns,
-            DisplaySkiRunDetail,
+            DisplaySkiRunInformation,
             DeleteSkiRun,
             AddSkiRun,
             UpdateSkiRun,

@@ -84,13 +84,28 @@ namespace SkiRunRater
         /// <param name="skiRun"></param>
         public void InsertSkiRun(SkiRun skiRun)
         {
-            string skiRunString;
-
             _skiRuns.Add(skiRun);
-
-            skiRunString = skiRun.ID + "," + skiRun.Name + "," + skiRun.Vertical;
-
+                        
             WriteSkiRunsData();
+        }
+
+        /// <summary>
+        /// Ski Run Index
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        private int GetSkinRunIndex(int ID)
+        {
+            int skiRunIndex = 0;
+
+            for (int index = 0; index < _skiRuns.Count(); index++)
+            {
+                if (_skiRuns[index].ID == ID)
+                {
+                    skiRunIndex = index;
+                }
+            }
+            return skiRunIndex;
         }
 
         /// <summary>
@@ -99,13 +114,7 @@ namespace SkiRunRater
         /// <param name="ID"></param>
         public void DeleteSkiRun(int ID)
         {
-            for (int index = 0; index < _skiRuns.Count(); index++)
-            {
-                if (_skiRuns[index].ID == ID)
-                {
-                    _skiRuns.RemoveAt(index);
-                }
-            }
+            _skiRuns.RemoveAt(GetSkinRunIndex(ID));
 
             WriteSkiRunsData();
         }
@@ -116,12 +125,20 @@ namespace SkiRunRater
         /// <param name="skiRun">ski run object</param>
         public void UpdateSkiRun(SkiRun skiRun)
         {
-            DeleteSkiRun(skiRun.ID);
-            InsertSkiRun(skiRun);
-
-            WriteSkiRunsData();
+            if (skiRun!=null)
+            {
+                foreach (SkiRun run in _skiRuns)
+                {
+                    if (run.ID==skiRun.ID)
+                    {
+                        run.Name = skiRun.Name;
+                        run.Vertical = skiRun.Vertical;
+                        break;
+                    }
+                }
+                WriteSkiRunsData();
+            }
         }
-
         /// <summary>
         /// method to return a ski run object given the ID
         /// </summary>
@@ -130,6 +147,8 @@ namespace SkiRunRater
         public SkiRun GetSkiRunByID(int ID)
         {
             SkiRun skiRun = null;
+
+            skiRun = _skiRuns[GetSkinRunIndex(ID)];
 
             return skiRun;
         }
@@ -153,7 +172,71 @@ namespace SkiRunRater
         {
             List<SkiRun> matchingSkiRuns = new List<SkiRun>();
 
+            matchingSkiRuns = _skiRuns.Where(sr => sr.Vertical >= minimumVertical && sr.Vertical <= maximumVertical).ToList();
+
             return matchingSkiRuns;
+        }
+
+        /// <summary>
+        /// Minimum Vetical 
+        /// </summary>
+        /// <returns></returns>
+        public int GetMinimumVertical()
+        {
+            int minimumVertical = 0;
+
+            Console.WriteLine(Environment.NewLine + "Please enter a minimum vertical you wish to query by:");
+            while (!int.TryParse(Console.ReadLine(), out minimumVertical))
+            {
+                ConsoleView.DisplayPromptMessage("Sorry, but the Vertical needs to be a valid number. Please try again.");
+                Console.WriteLine();
+            };
+
+            return minimumVertical;
+        }
+
+        /// <summary>
+        /// Max Verical option 
+        /// </summary>
+        /// <returns></returns>
+        public int GetMaximumVertical()
+        {
+            int maximumVertical = 0;
+
+            Console.WriteLine("Please enter a maximum vertical you wish to query by:");
+            while (!int.TryParse(Console.ReadLine(), out maximumVertical))
+            {
+                ConsoleView.DisplayPromptMessage("Sorry, but the Vertical needs to be a valid number. Please try again.");
+                Console.WriteLine();
+            };
+
+            return maximumVertical;
+        }
+
+        /// <summary>
+        /// This show the Queried Vertical
+        /// </summary>
+        /// <param name="matchingSkiRuns"></param>
+        public void DisplayQueriedVertical(List<SkiRun> matchingSkiRuns)
+        {
+            if (matchingSkiRuns.Count > 0)
+            {
+                foreach (SkiRun queriedSkiRun in matchingSkiRuns)
+                {
+                    StringBuilder skiRunInfo = new StringBuilder();
+
+                    skiRunInfo.Append(queriedSkiRun.ID.ToString().PadRight(8));
+                    skiRunInfo.Append(queriedSkiRun.Name.PadRight(25));
+                    skiRunInfo.Append(queriedSkiRun.Vertical.ToString().PadRight(5));
+                    ConsoleView.DisplayMessage(skiRunInfo.ToString());
+
+                }
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("There were no ski runs that matched your query.");
+            }
         }
 
         /// <summary>
